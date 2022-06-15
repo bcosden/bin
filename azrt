@@ -1,0 +1,12 @@
+#!/bin/bash
+if [[ -z "$1" ]]; then
+    echo "Usage: azrt resourcegroup nic"
+else
+    if [[ -z "$2" ]]; then
+        echo "Usage: azrt resourcegroup nic"
+    else
+       if [[ -z "$3" ]]; then
+	   az network nic show-effective-route-table -n $2 -g $1 -o table
+       fi
+    fi
+fi

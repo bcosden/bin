@@ -1,0 +1,10 @@
+#!/bin/bash
+if [[ -z "$1" ]]; then
+    echo "Parameter required: 'NotSpecified, Accepted, Running, Ready, Creating, Created, Deleting, Deleted, Canceled, Failed, Succeeded, Updating, MovingResources, TransientFailure'"
+else
+    if [[ -z "$2" ]]; then
+        echo "Resource Group required"
+    else
+       az deployment group list -g $2 --filter "provisioningState eq '$1'" -o table
+    fi
+fi

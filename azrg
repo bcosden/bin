@@ -1,0 +1,10 @@
+#!/bin/bash
+if [ -z "$1" ]; then
+    az group list --query "sort_by([], &name)" -o table
+else
+    if [[ -z "$2" ]]; then
+        az resource list --query "[?resourceGroup=='$1'].{ name: name, flavor: kind, Resourcetype: type, region: location, state: provisioningState } | sort_by([], &Resourcetype)" -o table
+    else
+        az resource list --query "[?resourceGroup=='$1'].{ name: name, flavor: kind, Resourcetype: type, region: location, state: provisioningState } | [?Resourcetype=='$2']" -o table
+    fi
+fi

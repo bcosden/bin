@@ -1,0 +1,20 @@
+#!/bin/bash
+if [[ -z "$1" ]]; then
+    az network bastion list --query '[].{Name:name, Location:location, RG:resourceGroup, Tunnel:enableTunneling, State:provisioningState}' -o table --only-show-errors
+    echo ""
+    echo "Usage: azssh resourcegroup vmname <bastion>"
+    echo "bastion is optional, if not provided assume 'bastion' is the name of the Bastion"
+else
+    if [[ -z "$2" ]]; then
+        echo "Usage: azssh resourcegroup vmname <bastion>"
+        echo "bastion is optional, if not provided assume 'bastion' is the name of the Bastion" 
+    else
+       if [[ -z "$3" ]]; then
+	   resid=$(az vm show -g $1 -n $2 --query 'id' -o tsv)
+	   az network bastion ssh -n bastion -g $1 --target-resource-id $resid --auth-type ssh-key --username azureuser --ssh-key ~/.ssh/id_rsa --only-show-errors
+       else
+           resid=$(az vm show -g $1 -n $2 --query 'id' -o tsv)
+           az network bastion ssh -n $3 -g $1 --target-resource-id $resid --auth-type ssh-key --username azureuser --ssh-key ~/.ssh/id_rsa --only-show-errors
+       fi
+    fi
+fi
