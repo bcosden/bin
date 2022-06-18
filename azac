@@ -1,0 +1,17 @@
+#!/bin/bash
+if [[ -z "$1" ]]; then
+    az account list -o table --only-show-errors
+else
+   if [[ "$1" == "mgmt" ]]; then
+       echo "Account set to MS-Management"
+       az account set --name "MS-Management"
+   else
+       if [[ "$1" == "conn" ]]; then
+           echo "Account set to MS-Connectivity"
+           az account set --name "MS-Connectivity"
+       else
+	   echo "Account set to "$(az account show --subscription $1 --query 'name' -o tsv) 
+           az account set --subscription $1
+       fi
+   fi
+fi
