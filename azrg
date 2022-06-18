@@ -1,9 +1,9 @@
 #!/bin/bash
 if [ -z "$1" ]; then
-    az group list --query "[? !(contains(name, 'DefaultResourceGroup')) && !(contains(name, 'NetworkWatcher'))] | sort_by([], &name)" -o table
+    az group list --query "[? !(contains(name, 'DefaultResourceGroup')) && !(contains(name, 'NetworkWatcher'))] | [].{name:name, loc:location, state:properties.provisioningState} | sort_by([], &name)" -o table
 else
     if [ "$1" == "-a" ]; then
-        az group list --query "sort_by([], &name)" -o table
+        az group list --query "[].{name:name, loc:location, state:properties.provisioningState} | sort_by([], &name)" -o table
     else
         if [[ -z "$2" ]]; then
             az resource list --query "[?resourceGroup=='$1'].{ name: name, flavor: kind, Resourcetype: type, region: location, state: provisioningState } | sort_by([], &Resourcetype)" -o table
