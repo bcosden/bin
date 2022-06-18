@@ -10,14 +10,14 @@ else
 	    for i in $vmlist
             do
                 echo "starting "$i
-                az vm start -g $1 -n $i
+                az vm start -g $1 -n $i --no-wait
             done
         else
             vmlist=$(az vm list -g $1 --query '[].name' -o tsv)
 	    for i in $vmlist
             do
                 echo "stopping "$i
-                az vm deallocate -g $1 -n $i
+                az vm deallocate -g $1 -n $i --no-wait
             done
         fi
     fi
