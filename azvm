@@ -2,5 +2,23 @@
 if [ -z "$1" ]; then
     az vm list -o table
 else
-    az vm list -g $1 --show-details -o table --query "[*].{VM:name, Size:hardwareProfile.vmSize, OS:storageProfile.osDisk.osType, IP:privateIps, PIP:publicIps, Loc:location, State:powerState, admin:osProfile.adminUsername, FQDN:fqdns}"
+    if [ -z "$2" ]; then
+        az vm list -g $1 --show-details -o table --query "[*].{VM:name, Size:hardwareProfile.vmSize, OS:storageProfile.osDisk.osType, IP:privateIps, PIP:publicIps, Loc:location, State:powerState, admin:osProfile.adminUsername, FQDN:fqdns}"
+    else
+        if [ "$2" == "start" ]; then
+	    vmlist=$(az vm list -g $1 --query '[].name' -o tsv)
+	    for i in $vmlist
+            do
+                echo "starting "$i
+                az vm start -g $1 -n $i
+            done
+        else
+            vmlist=$(az vm list -g $1 --query '[].name' -o tsv)
+	    for i in $vmlist
+            do
+                echo "stopping "$i
+                az vm deallocate -g $1 -n $i
+            done
+        fi
+    fi
 fi
