@@ -14,7 +14,7 @@ else
             done
         else
             vmlist=$(az vm list -g $1 --query '[].name' -o tsv)
-	    for i in $vmlist
+            for i in $vmlist
             do
                 echo "stopping "$i
                 az vm deallocate -g $1 -n $i --no-wait
