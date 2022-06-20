@@ -1,0 +1,25 @@
+#!/bin/bash
+if [ -z "$1" ]; then
+    az network express-route list-service-providers -o table
+else
+    if [ -z "$2" ]; then
+        echo "Usage:"
+	echo "azer <-p -l -b> name"
+    else
+        if [ "$1" == "-p" ]; then
+            az network express-route list-service-providers --query "[? contains(name, '$2')].[{Locations:peeringLocations}]"
+        else
+            if [ "$1" == "-l" ]; then
+                az network express-route list-service-providers --query "[? contains(peeringLocations, '$2')].{Name:name}" -o table
+            else
+                if [ "$1" == "-b" ]; then
+                    az network express-route list-service-providers --query "[? contains(name, '$2')].[{Bandwidths:bandwidthsOffered}]"
+                else
+                    echo "Usage:"
+		    echo "azer <-p -l -b> name"
+                fi
+             fi
+         fi
+     fi
+fi
+

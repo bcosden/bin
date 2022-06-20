@@ -1,0 +1,10 @@
+#!/bin/bash
+if [ -z "$1" ]; then
+    az network vnet list -o table
+else
+    if [ -z "$2" ]; then
+        az network vnet list -g $1 -o table
+    else
+        az network vnet subnet list -g $1 --vnet-name $2 --query '[].{Name:name, Prefix:addressPrefix, NSG:networkSecurityGroup, State:provisioningState}' -o table
+    fi
+fi
