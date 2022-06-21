@@ -6,7 +6,11 @@ else
         echo "Usage: azrt resourcegroup nic"
     else
        if [[ -z "$3" ]]; then
-	   az network nic show-effective-route-table -n $2 -g $1 -o table
+	   if [ $(az resource list -g $1 -n $2 --query '[].type' -o tsv) == "Microsoft.Network/networkInterfaces" ]; then
+               az network nic show-effective-route-table -n $2 -g $1 -o table
+           else
+	       az network route-table route list --resource-group $1 --route-table-name $2 -o table
+	   fi
        fi
     fi
 fi
