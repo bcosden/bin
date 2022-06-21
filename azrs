@@ -1,0 +1,24 @@
+#!/bin/bash
+if [[ -z "$1" ]]; then
+    az network routeserver list --query "[].{RG:resourceGroup, Loc:location, Name:name, Addr:addressPrefix, State:routingState}"  -o table
+else
+    if [[ -z "$2" ]]; then
+        az network routeserver list -g $1 --query "[].{RG:resourceGroup, Loc:location, Name:name, State:routingState}"  -o table 
+    else
+       if [[ -z "$3" ]]; then
+           az network routeserver peering list -g $1 --routeserver $2 -o table
+       else
+	   echo ""
+	   echo "-----------------------------"
+	   echo "Advertised Routes on peer "$3
+	   echo "-----------------------------"
+           az network routeserver peering list-advertised-routes -g $1 --routeserver $2 -n $3
+	   echo ""
+	   echo "-----------------------------"
+	   echo "Learned Routes on peer "$3
+	   echo "-----------------------------"
+	   az network routeserver peering list-learned-routes -g $1 --routeserver $2 -n $3
+	   echo ""
+       fi
+    fi
+fi
