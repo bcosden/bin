@@ -15,11 +15,9 @@ else
                 if [ "$1" == "-b" ]; then
                     az network express-route list-service-providers --query "[? contains(name, '$2')].[{Bandwidths:bandwidthsOffered}]"
                 else
-                    echo "Usage:"
-		    echo "azer <-p -l -b> name"
+	            az network express-route list-route-tables -g $1 -n $2 --path primary --peering-name AzurePrivatePeering --only-show-errors
                 fi
              fi
          fi
      fi
 fi
-
