@@ -12,12 +12,12 @@ else
 	   echo "-----------------------------"
 	   echo "Advertised Routes on peer "$3
 	   echo "-----------------------------"
-           az network routeserver peering list-advertised-routes -g $1 --routeserver $2 -n $3
+           az network routeserver peering list-advertised-routes -g $1 --routeserver $2 -n $3 | jq -r '["aspath","localaddress","network","nexthop","origin"], (.RouteServiceRole_IN_0[],.RouteServiceRole_IN_1[] | [.asPath,.localAddress,.network,.nextHop,.origin]) | @csv' | csvlook
 	   echo ""
 	   echo "-----------------------------"
 	   echo "Learned Routes on peer "$3
 	   echo "-----------------------------"
-	   az network routeserver peering list-learned-routes -g $1 --routeserver $2 -n $3
+	   az network routeserver peering list-learned-routes -g $1 --routeserver $2 -n $3 | jq -r '["aspath","localaddress","network","nexthop","origin","sourcepeer"], (.RouteServiceRole_IN_0[],.RouteServiceRole_IN_1[] | [.asPath,.localAddress,.network,.nextHop,.origin,.sourcePeer]) | @csv' | csvlook
 	   echo ""
        fi
     fi

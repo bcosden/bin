@@ -15,7 +15,7 @@ else
                 if [ "$1" == "-b" ]; then
                     az network express-route list-service-providers --query "[? contains(name, '$2')].[{Bandwidths:bandwidthsOffered}]"
                 else
-	            az network express-route list-route-tables -g $1 -n $2 --path primary --peering-name AzurePrivatePeering --only-show-errors
+	            az network express-route list-route-tables -g $1 -n $2 --path primary --peering-name AzurePrivatePeering --only-show-errors | jq -r '["network","nexthop","path"], (.value[] | [.network,.nextHop,.path]) | @csv' | csvlook
                 fi
              fi
          fi
