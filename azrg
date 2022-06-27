@@ -6,12 +6,10 @@ else
         az group list --query "[].{name:name, loc:location, state:properties.provisioningState} | sort_by([], &name)" -o table
     else
         if [[ -z "$2" ]]; then
-            az resource list --query "[?resourceGroup=='$1'].{ name: name, flavor: kind, Resourcetype: type, region: location, state: provisioningState } | sort_by([], &Resourcetype)" -o table
+	    az resource list -g $1 --query "[].{ name: name, flavor: kind, Resourcetype: type, region: location, state: provisioningState } | sort_by([], &Resourcetype)" -o table
 	else
 	    if [ "$1" == "-d" ]; then
 	        az group delete -n $2 --no-wait
-	    else
-                az resource list --query "[?resourceGroup=='$1'].{ name: name, flavor: kind, Resourcetype: type, region: location, state: provisioningState } | [?Resourcetype=='$2']" -o table
             fi 
 	fi
     fi

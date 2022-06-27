@@ -13,12 +13,22 @@ else
                 az vm start -g $1 -n $i --no-wait
             done
         else
-            vmlist=$(az vm list -g $1 --query '[].name' -o tsv)
-            for i in $vmlist
-            do
-                echo "stopping "$i
-                az vm deallocate -g $1 -n $i --no-wait
-            done
+	    if [ "$2" == "stop" ]; then
+                vmlist=$(az vm list -g $1 --query '[].name' -o tsv)
+                for i in $vmlist
+                do
+                    echo "stopping "$i
+                    az vm deallocate -g $1 -n $i --no-wait
+                done
+	    else
+	        if [ "$2" == "-d" ]; then
+		    echo "delete VM coming soon"
+		else
+		    if [ "$2" == "-da" ]; then
+		        echo "DELETE all VM objects coming soon"
+		    fi
+	        fi
+	    fi
         fi
     fi
 fi
