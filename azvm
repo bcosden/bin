@@ -23,6 +23,7 @@ else
 	    else
 	        if [ "$2" == "-d" ]; then
 		    echo "delete VM coming soon"
+		    az resource list -g $1 --query "[?(contains(name, '$3'))].{name:name, type:type}" -o tsv
 		else
 		    if [ "$2" == "-da" ]; then
 		        echo "DELETE all VM objects coming soon"
