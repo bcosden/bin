@@ -1,0 +1,11 @@
+#!/bin/bash
+if [ -z "$1" ]; then
+    echo "usage: "
+else
+    if [ -z "$2" ]; then
+	echo "usage: "
+    else
+	type=$(az resource list -g $1 --query "[?name=='$2'].{type:type}" -o tsv)
+        az resource delete -g $1 -n $2 --resource-type $type
+    fi
+fi

@@ -3,8 +3,7 @@ if [ -z "$1" ]; then
     az network express-route list-service-providers -o table
 else
     if [ -z "$2" ]; then
-        echo "Usage:"
-	echo "azer <-p -l -b> name"
+	az network express-route list -g $1 -o table --query "[].{RG:resourceGroup, Name:name, Loc:location, State:serviceProviderProvisioningState, Key:serviceKey}"
     else
         if [ "$1" == "-p" ]; then
             az network express-route list-service-providers --query "[? contains(name, '$2')].[{Locations:peeringLocations}]"
