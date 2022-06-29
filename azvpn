@@ -1,0 +1,15 @@
+#!/bin/bash
+if [ -z "$1" ]; then
+    echo "usage: azvpn rg exrcircuit"
+else
+    if [ -z "$2" ]; then
+        az network vnet-gateway list -g $1 --query "[].{RG:resourceGroup, Name:name, Loc:location, Type:gatewayType, State:provisioningState, Sku:sku.tier, Gen:vpnGatewayGeneration}" -o table
+    else
+        if [ -z "$3" ]; then
+	    echo "usage: azvpn rg exrcircuit"
+        else
+            circuit=$(az network express-route show -g $1 -n $3 --query "id" -o tsv)
+            az network vpn-connection create -g $1 -n exrconn --vnet-gateway1 $2 --express-route-circuit2 $circuit -o none
+        fi
+    fi
+fi
