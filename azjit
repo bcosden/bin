@@ -12,7 +12,7 @@ else
     else
         if [ "$2" == "-a" ]; then
             loc=$(az group show -g $1 --query 'location' -o tsv)
-            uri='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Security/locations/'$loc'/jitNetworkAccessPolicies/vmaccesspolicy?api-version=2020-01-01'
+            uri='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Security/locations/'$loc'/jitNetworkAccessPolicies/'$3'?api-version=2020-01-01'
             json='{
             "kind": "Basic",
             "properties": {
@@ -35,11 +35,7 @@ else
                     ]
                 }
                 ]
-            },
-            "id": "/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Security/locations/'$loc'/jitNetworkAccessPolicies/default",
-            "name": "default",
-            "type": "Microsoft.Security/locations/jitNetworkAccessPolicies",
-            "location": "'$loc'"
+            }
             }'
 
             az rest --method PUT \
@@ -47,8 +43,8 @@ else
                 --body "$json"
         else
             loc=$(az group show -g $1 --query 'location' -o tsv)
-            ip=$(curl -s -4 ifconfig.io)
-            uri='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Security/locations/'$loc'/jitNetworkAccessPolicies/vmaccesspolicy/initiate?api-version=2020-01-01'
+            ip=$(curl -s ipinfo.io/ip)
+            uri='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Security/locations/'$loc'/jitNetworkAccessPolicies/'$2'/initiate?api-version=2020-01-01'
 
             json='{
             "virtualMachines": [
