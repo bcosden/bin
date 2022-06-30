@@ -43,7 +43,7 @@ else
                 --body "$json"
         else
             loc=$(az group show -g $1 --query 'location' -o tsv)
-            ip=$(curl -s ipinfo.io/ip)
+            ip=$(curl -s -4 ifconfig.io)
             uri='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Security/locations/'$loc'/jitNetworkAccessPolicies/'$2'/initiate?api-version=2020-01-01'
 
             json='{
