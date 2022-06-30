@@ -1,0 +1,75 @@
+#!/bin/bash
+if [ -z "$1" ]; then
+    echo "usage:"
+    echo "azjit rg              - list policies"
+    echo "azjit rg -a vm        - add policy to a vm"
+    echo "azjit rg vm           - initiate access to vm"
+else
+    subid=$(az account show --query 'id' -o tsv)
+    if [ -z "$2" ]; then
+        uri='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Security/jitNetworkAccessPolicies?api-version=2020-01-01'
+        az rest --method GET --url $uri
+    else
+        if [ "$2" == "-a" ]; then
+            loc=$(az group show -g $1 --query 'location' -o tsv)
+            uri='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Security/locations/'$loc'/jitNetworkAccessPolicies/vmaccesspolicy?api-version=2020-01-01'
+            json='{
+            "kind": "Basic",
+            "properties": {
+                "virtualMachines": [
+                {
+                    "id": "/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Compute/virtualMachines/'$3'",
+                    "ports": [
+                    {
+                        "number": 22,
+                        "protocol": "*",
+                        "allowedSourceAddressPrefix": "*",
+                        "maxRequestAccessDuration": "PT24H"
+                    },
+                    {
+                        "number": 3389,
+                        "protocol": "*",
+                        "allowedSourceAddressPrefix": "*",
+                        "maxRequestAccessDuration": "PT24H"
+                    }
+                    ]
+                }
+                ]
+            },
+            "id": "/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Security/locations/'$loc'/jitNetworkAccessPolicies/default",
+            "name": "default",
+            "type": "Microsoft.Security/locations/jitNetworkAccessPolicies",
+            "location": "'$loc'"
+            }'
+
+            az rest --method PUT \
+                --url $uri  \
+                --body "$json"
+        else
+            loc=$(az group show -g $1 --query 'location' -o tsv)
+            ip=$(curl -s -4 ifconfig.io)
+            uri='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Security/locations/'$loc'/jitNetworkAccessPolicies/vmaccesspolicy/initiate?api-version=2020-01-01'
+
+            json='{
+            "virtualMachines": [
+                {
+                "id": "/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Compute/virtualMachines/'$2'",
+                "ports": [
+                    {
+                    "number": "22",
+                    "duration": "PT12H",
+                    "allowedSourceAddressPrefix": "'$ip'"
+                    }
+                ]
+                }
+            ],
+            "justification": "GBB doing our thang ....."
+            }'
+
+            az rest --method POST \
+                --url $uri  \
+                --body "$json"  \
+                --output none
+        fi
+    fi
+fi
