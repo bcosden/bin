@@ -44,24 +44,35 @@ else
         else
             loc=$(az group show -g $1 --query 'location' -o tsv)
             ip=$(curl -s -4 ifconfig.io)
+	    uri='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Security/locations/'$loc'/jitNetworkAccessPolicies/'$2'?api-version=2020-01-01'
+            ports=$(az rest --method GET --url $uri | jq ".properties.virtualMachines[].ports[].number")
             uri='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Security/locations/'$loc'/jitNetworkAccessPolicies/'$2'/initiate?api-version=2020-01-01'
 
             json='{
             "virtualMachines": [
                 {
                 "id": "/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Compute/virtualMachines/'$2'",
-                "ports": [
-                    {
-                    "number": "22",
+                "ports": ['
+		i=0
+		len=${#ports[@]}
+		echo $len
+                for port in $ports
+		do
+                    json+='{
+                    "number": "'$port'",
                     "duration": "PT12H",
                     "allowedSourceAddressPrefix": "'$ip'"
-                    }
-                ]
+                    }'
+	            ((i=i+1))
+	            if [ $i -le $len ]; then
+	                json+=','
+		    fi
+	        done
+                json+=']
                 }
             ],
             "justification": "GBB doing our thang ....."
             }'
-
             az rest --method POST \
                 --url $uri  \
                 --body "$json"  \
