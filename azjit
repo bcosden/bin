@@ -42,6 +42,11 @@ else
                 --url $uri  \
                 --body "$json"
         else
+	    if [ -z $3 ]; then
+                dur=12
+	    else
+	        dur=$3
+	    fi
             loc=$(az group show -g $1 --query 'location' -o tsv)
             ip=$(curl -s -4 ifconfig.io)
 	    uri='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Security/locations/'$loc'/jitNetworkAccessPolicies/'$2'?api-version=2020-01-01'
@@ -55,12 +60,11 @@ else
                 "ports": ['
 		i=0
 		len=${#ports[@]}
-		echo $len
                 for port in $ports
 		do
                     json+='{
                     "number": "'$port'",
-                    "duration": "PT12H",
+                    "duration": "PT'$dur'H",
                     "allowedSourceAddressPrefix": "'$ip'"
                     }'
 	            ((i=i+1))
