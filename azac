@@ -2,16 +2,32 @@
 if [[ -z "$1" ]]; then
     az account list -o table --only-show-errors
 else
-   if [[ "$1" == "mgmt" ]]; then
-       echo "Account set to MS-Management"
-       az account set --name "MS-Management"
+   if [[ "$1" == "-h" ]]; then
+       echo ""
+       echo "----------------------------------------------------------------------------------------------------------"
+       echo " Azure Account Management"
+       echo ""
+       echo " View current subscriptions and change the Azure CLI active subscription."
+       echo ""
+       echo " usage:"
+       echo ""
+       echo " azac                                             - list all subscriptions available under current login"
+       echo " azjit mgmt | conn                                - shortcuts to most frequently used subs"
+       echo " azjit <subid>                                    - set subscription by subscription ID"
+       echo "-----------------------------------------------------------------------------------------------------------"
+       echo ""
    else
-       if [[ "$1" == "conn" ]]; then
-           echo "Account set to MS-Connectivity"
-           az account set --name "MS-Connectivity"
+       if [[ "$1" == "mgmt" ]]; then
+           echo "Account set to MS-Management"
+           az account set --name "MS-Management"
        else
-	   echo "Account set to "$(az account show --subscription $1 --query 'name' -o tsv) 
-           az account set --subscription $1
+           if [[ "$1" == "conn" ]]; then
+               echo "Account set to MS-Connectivity"
+               az account set --name "MS-Connectivity"
+           else
+	       echo "Account set to "$(az account show --subscription $1 --query 'name' -o tsv) 
+               az account set --subscription $1
+           fi
        fi
-   fi
+    fi
 fi
