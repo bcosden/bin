@@ -1,4 +1,15 @@
 #!/bin/bash
+
+BLACK="\033[30m"
+RED="\033[31m"
+GREEN="\033[32m"
+YELLOW="\033[33m"
+BLUE="\033[34m"
+PINK="\033[35m"
+CYAN="\033[36m"
+WHITE="\033[37m"
+NORMAL="\033[0;39m"
+
 if [ -z "$1" ]; then
     echo ""
     echo "----------------------------------------------------------------------------------------------------------"
@@ -18,7 +29,25 @@ else
     subid=$(az account show --query 'id' -o tsv)
     if [ -z "$2" ]; then
         uri='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Security/jitNetworkAccessPolicies?api-version=2020-01-01'
-        az rest --method GET --url $uri
+        output=$(az rest --method GET --url $uri)
+        #echo $output | jq -r .
+        len=$(echo $output | jq -r '.value | length')
+        echo "Policies"
+        for (( i=0; i<$len; i++ ))        
+        do
+            echo " --------------------------------------------"
+            echo $output | jq -r '.value['$i'].properties.virtualMachines[0].ports[] += {"name":.value['$i'].name}' | jq -r '["vm","port","proto","maxdur","sourceaddr"], (.value['$i'].properties.virtualMachines[0].ports[] | [.name,.number,.protocol,.maxRequestAccessDuration,.allowedSourceAddressPrefix]) | @csv' | csvlook -I
+            echo " --------------------------------------------"
+            echo ""
+        done
+        echo "Access"
+        for (( i=0; i<$len; i++ ))        
+        do
+            echo " ------------------------------------------------------------"
+            echo $output | jq -r '.value['$i'].properties.requests[].virtualMachines[0].ports[] += {"name":.value['$i'].name}' | jq -r '["vm","port","EndTime","sourceaddr"], (.value['$i'].properties.requests[].virtualMachines[0].ports[] | [.name,.number,.endTimeUtc,.allowedSourceAddressPrefix]) | @csv' | csvlook -I
+            echo " ------------------------------------------------------------"
+            echo ""
+        done
     else
         if [ "$2" == "-a" ]; then
             loc=$(az group show -g $1 --query 'location' -o tsv)
@@ -32,7 +61,7 @@ else
                 {
                     "id": "/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Compute/virtualMachines/'$3'",
                     "ports": ['
-		    len=${#ports[@]}
+		            len=${#ports[@]}
                     for (( i=0; i<$len; i++ ))
 		            do
                         json+='{
