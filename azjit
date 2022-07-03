@@ -1,9 +1,19 @@
 #!/bin/bash
 if [ -z "$1" ]; then
-    echo "usage:"
-    echo "azjit rg              - list policies"
-    echo "azjit rg -a vm        - add policy to a vm"
-    echo "azjit rg vm           - initiate access to vm"
+    echo ""
+    echo "----------------------------------------------------------------------------------------------------------"
+    echo " Azure Just in Time Access"
+    echo ""
+    echo " Microsoft policy automatically creates NSG's to block inbound access to Virtual Machines. Use this tool "
+    echo " to set a just in time access policy for a vm and open the ports for a period of time for testing.       "
+    echo ""
+    echo " usage:"
+    echo ""
+    echo " azjit <rg>                                       - list effective policies for a resourcegroup"
+    echo " azjit <rg> -a <vmname> <port1,port2,port3...>    - add a port policy to a vm, default 24h, any source"
+    echo " azjit <rg> <vmname> (duration)                   - open port access to vm, optional duration, default 12h"
+    echo "-----------------------------------------------------------------------------------------------------------"
+    echo ""
 else
     subid=$(az account show --query 'id' -o tsv)
     if [ -z "$2" ]; then
