@@ -12,6 +12,8 @@ else
     else
         if [ "$2" == "-a" ]; then
             loc=$(az group show -g $1 --query 'location' -o tsv)
+            myvar=$4
+            ports=(`echo $myvar | tr ',' ' '`)
             uri='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Security/locations/'$loc'/jitNetworkAccessPolicies/'$3'?api-version=2020-01-01'
             json='{
             "kind": "Basic",
@@ -19,21 +21,21 @@ else
                 "virtualMachines": [
                 {
                     "id": "/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Compute/virtualMachines/'$3'",
-                    "ports": [
-                    {
-                        "number": 22,
-                        "protocol": "*",
-                        "allowedSourceAddressPrefix": "*",
-                        "maxRequestAccessDuration": "PT24H"
-                    },
-                    {
-                        "number": 3389,
-                        "protocol": "*",
-                        "allowedSourceAddressPrefix": "*",
-                        "maxRequestAccessDuration": "PT24H"
+                    "ports": ['
+		            len=${#ports[@]}
+                    for (( i=0; i<$len; i++ ))
+		            do
+                        json+='{
+                        "number": "'${ports[$i]}'",
+                        "duration": "PT24H",
+                        "allowedSourceAddressPrefix": "'$ip'"
+                        }'
+	                    if [ $i -lt $((len-1)) ]; then
+	                        json+=','
+		                fi
+	                done
+                    json+=']                
                     }
-                    ]
-                }
                 ]
             }
             }'
@@ -49,34 +51,33 @@ else
 	    fi
             loc=$(az group show -g $1 --query 'location' -o tsv)
             ip=$(curl -s -4 ifconfig.io)
-	    uri='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Security/locations/'$loc'/jitNetworkAccessPolicies/'$2'?api-version=2020-01-01'
-            ports=$(az rest --method GET --url $uri | jq ".properties.virtualMachines[].ports[].number")
+	        uri='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Security/locations/'$loc'/jitNetworkAccessPolicies/'$2'?api-version=2020-01-01'
+            myvar=$(az rest --method GET --url $uri | jq ".properties.virtualMachines[].ports[].number")
+            ports=(`echo $myvar`)
             uri='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Security/locations/'$loc'/jitNetworkAccessPolicies/'$2'/initiate?api-version=2020-01-01'
-
             json='{
             "virtualMachines": [
                 {
                 "id": "/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Compute/virtualMachines/'$2'",
                 "ports": ['
-		i=0
-		len=${#ports[@]}
-                for port in $ports
-		do
+		        len=${#ports[@]}
+                for (( i=0; i<$len; i++ ))
+		        do
                     json+='{
-                    "number": "'$port'",
+                    "number": "'${ports[$i]}'",
                     "duration": "PT'$dur'H",
                     "allowedSourceAddressPrefix": "'$ip'"
                     }'
-	            ((i=i+1))
-	            if [ $i -le $len ]; then
-	                json+=','
-		    fi
-	        done
+	                if [ $i -lt $((len-1)) ]; then
+	                    json+=','
+		            fi
+	            done
                 json+=']
                 }
             ],
             "justification": "GBB doing our thang ....."
             }'
+            
             az rest --method POST \
                 --url $uri  \
                 --body "$json"  \
