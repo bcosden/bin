@@ -32,13 +32,14 @@ else
                 {
                     "id": "/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Compute/virtualMachines/'$3'",
                     "ports": ['
-		            len=${#ports[@]}
+		    len=${#ports[@]}
                     for (( i=0; i<$len; i++ ))
 		            do
                         json+='{
                         "number": "'${ports[$i]}'",
-                        "duration": "PT24H",
-                        "allowedSourceAddressPrefix": "'$ip'"
+                        "maxRequestAccessDuration": "PT24H",
+			"protocol": "*",
+                        "allowedSourceAddressPrefix": "*"
                         }'
 	                    if [ $i -lt $((len-1)) ]; then
 	                        json+=','
@@ -52,7 +53,8 @@ else
 
             az rest --method PUT \
                 --url $uri  \
-                --body "$json"
+                --body "$json" \
+		--output none
         else
 	    if [ -z $3 ]; then
                 dur=12
