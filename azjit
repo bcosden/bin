@@ -30,8 +30,8 @@ else
     if [ -z "$2" ]; then
         uri='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Security/jitNetworkAccessPolicies?api-version=2020-01-01'
         output=$(az rest --method GET --url $uri)
-        #echo $output | jq -r .
         len=$(echo $output | jq -r '.value | length')
+        echo ""
         echo "Policies"
         for (( i=0; i<$len; i++ ))        
         do
