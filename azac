@@ -18,12 +18,20 @@ else
        echo ""
    else
        if [[ "$1" == "mgmt" ]]; then
-           echo "Account set to MS-Management"
-           az account set --name "MS-Management"
+           echo "Account set to Management"
+	   if [ -z $(az account list --query '[].name' -o tsv | grep "Saros-Management") ]; then
+              az account set --name "MS-Management"
+	   else
+	      az account set --name "Saros-Management"
+	   fi
        else
            if [[ "$1" == "conn" ]]; then
-               echo "Account set to MS-Connectivity"
-               az account set --name "MS-Connectivity"
+               echo "Account set to Connectivity"
+	       if [ -z $(az account list --query '[].name' -o tsv | grep "Saros-Connectivity") ]; then
+                  az account set --name "MS-Connectivity"
+               else
+                  az account set --name "Saros-Connectivity"
+               fi
            else
 	       echo "Account set to "$(az account show --subscription $1 --query 'name' -o tsv) 
                az account set --subscription $1

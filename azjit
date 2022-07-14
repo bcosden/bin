@@ -43,8 +43,11 @@ else
         echo "Access"
         for (( i=0; i<$len; i++ ))        
         do
+	    #enddt=($(echo $output | jq -r '.value['$i'].properties.requests[].virtualMachines[0].ports[].endTimeUtc'))
+	    #echo "date: "${enddt[$i]}
+            #date -d "${enddt[$i]}" +'%D %r'
             echo " ------------------------------------------------------------"
-            echo $output | jq -r '.value['$i'].properties.requests[].virtualMachines[0].ports[] += {"name":.value['$i'].name}' | jq -r '["vm","port","EndTime","sourceaddr"], (.value['$i'].properties.requests[].virtualMachines[0].ports[] | [.name,.number,.endTimeUtc,.allowedSourceAddressPrefix]) | @csv' | csvlook -I
+	    echo $output | jq -r '.value['$i'].properties.requests[].virtualMachines[0].ports[] += {"name":.value['$i'].name}' | jq -r '["vm","port","EndTime","sourceaddr","status"], (.value['$i'].properties.requests[].virtualMachines[0].ports[] | [.name,.number,.endTimeUtc,.allowedSourceAddressPrefix,.status]) | @csv' | csvlook -I
             echo " ------------------------------------------------------------"
             echo ""
         done

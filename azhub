@@ -6,18 +6,15 @@ else
         az network vhub list -g $1 -o table --query "[*].{Name:name, Loc:location, Network:addressPrefix, State:routingState}"
     else
 	if [ "$2" == "rt" ]; then
+	    subid=$(az account show --query 'id' -o tsv)
             for vhubname in `az network vhub list -g $1 --query "[].id" -o tsv | rev | cut -d'/' -f1 | rev`
             do
                 for routetable in `az network vhub route-table list --vhub-name $vhubname -g $1 --query "[].id" -o tsv`
                 do
                     if [ "$(echo $routetable | rev | cut -d'/' -f1 | rev)" != "noneRouteTable" ]; then
                         echo -e vHUB: $vhubname 
-                        echo -e Effective route table: $(echo $routetable | rev | cut -d'/' -f1 | rev)   
-                        az network vhub get-effective-routes -g $1 -n $vhubname \
-                            --resource-type RouteTable \
-                            --resource-id $routetable \
-                            --query "value[].{addressPrefixes:addressPrefixes[0], asPath:asPath, nextHopType:nextHopType}" \
-                            --output table
+			echo -e Effective route table: $(echo $routetable | rev | cut -d'/' -f1 | rev)
+			az network vhub get-effective-routes --resource-type RouteTable --resource-id $routetable -g $1 -n $vhubname --query 'value[].{Prefix:addressPrefixes[0],ASPath:asPath,NextHopType:nextHopType,NextHop:nextHops[0],Origin:routeOrigin}' | awk '{ gsub(/\/subscriptions\/'$subid'\/resourceGroups\/'$1'\/providers\/Microsoft.Network\/virtualHubs\/'$vhubname'\/hubVirtualNetworkConnections\//,""); print }' | awk '{ gsub(/\/subscriptions\/'$subid'\/resourceGroups\/'$1'\/providers\/Microsoft.Network\/vpnGateways\//,""); print }' | awk '{ gsub(/\/subscriptions\/'$subid'\/resourceGroups\/'$1'\/providers\/Microsoft.Network\/virtualHubs\//,""); print }' | awk '{ gsub(/'$hubname'\/hubRouteTables\//,""); print }' | sed 's/null/"null"/' | jq -r '["Prefix","ASPath","NextHopType","NextHop","Origin"], (.[] | [.Prefix, .ASPath, .NextHopType, .NextHop, .Origin]) | @csv' | csvlook -I
                         echo
                     fi
                 done

@@ -1,0 +1,125 @@
+{
+  "value": [
+    {
+      "id": "/subscriptions/72487855-b07e-43b0-9241-66a43fdbe984/resourceGroups/1hub-bgp/providers/Microsoft.Security/locations/eastus/jitNetworkAccessPolicies/frrVM",
+      "kind": "Basic",
+      "location": "eastus",
+      "name": "frrVM",
+      "properties": {
+        "appendMode": false,
+        "provisioningState": "Succeeded",
+        "requests": [
+          {
+            "justification": "GBB doing our thang .....",
+            "requestor": "brcosden@microsoft.com",
+            "startTimeUtc": "2022-07-05T16:59:09.8258045Z",
+            "virtualMachines": [
+              {
+                "id": "/subscriptions/72487855-b07e-43b0-9241-66a43fdbe984/resourceGroups/1hub-bgp/providers/Microsoft.Compute/virtualMachines/frrVM",
+                "ports": [
+                  {
+                    "allowedSourceAddressPrefix": "67.189.138.234",
+                    "endTimeUtc": "2022-07-06T04:59:09.8258045Z",
+                    "number": 22,
+                    "status": "Revoked",
+                    "statusReason": "Expired"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "justification": "GBB doing our thang .....",
+            "requestor": "brcosden@microsoft.com",
+            "startTimeUtc": "2022-07-10T14:32:33.8910101Z",
+            "virtualMachines": [
+              {
+                "id": "/subscriptions/72487855-b07e-43b0-9241-66a43fdbe984/resourceGroups/1hub-bgp/providers/Microsoft.Compute/virtualMachines/frrVM",
+                "ports": [
+                  {
+                    "allowedSourceAddressPrefix": "67.189.138.234",
+                    "endTimeUtc": "2022-07-11T02:32:33.8910101Z",
+                    "number": 22,
+                    "status": "Initiated",
+                    "statusReason": "UserRequested"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "justification": "GBB doing our thang .....",
+            "requestor": "brcosden@microsoft.com",
+            "startTimeUtc": "2022-07-10T14:31:41.1447493Z",
+            "virtualMachines": [
+              {
+                "id": "/subscriptions/72487855-b07e-43b0-9241-66a43fdbe984/resourceGroups/1hub-bgp/providers/Microsoft.Compute/virtualMachines/frrVM",
+                "ports": [
+                  {
+                    "allowedSourceAddressPrefix": "67.189.138.234",
+                    "endTimeUtc": "2022-07-11T02:31:41.1447493Z",
+                    "number": 22,
+                    "status": "Initiated",
+                    "statusReason": "UserRequested"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "justification": "GBB doing our thang .....",
+            "requestor": "brcosden@microsoft.com",
+            "startTimeUtc": "2022-07-10T02:00:32.2871686Z",
+            "virtualMachines": [
+              {
+                "id": "/subscriptions/72487855-b07e-43b0-9241-66a43fdbe984/resourceGroups/1hub-bgp/providers/Microsoft.Compute/virtualMachines/frrVM",
+                "ports": [
+                  {
+                    "allowedSourceAddressPrefix": "67.189.138.234",
+                    "endTimeUtc": "2022-07-10T14:00:32.2871686Z",
+                    "number": 22,
+                    "status": "Revoked",
+                    "statusReason": "Expired"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "justification": "GBB doing our thang .....",
+            "requestor": "brcosden@microsoft.com",
+            "startTimeUtc": "2022-07-05T16:53:56.4315437Z",
+            "virtualMachines": [
+              {
+                "id": "/subscriptions/72487855-b07e-43b0-9241-66a43fdbe984/resourceGroups/1hub-bgp/providers/Microsoft.Compute/virtualMachines/frrVM",
+                "ports": [
+                  {
+                    "allowedSourceAddressPrefix": "67.189.138.234",
+                    "endTimeUtc": "2022-07-06T04:53:56.4315437Z",
+                    "number": 22,
+                    "status": "Revoked",
+                    "statusReason": "Expired"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "virtualMachines": [
+          {
+            "id": "/subscriptions/72487855-b07e-43b0-9241-66a43fdbe984/resourceGroups/1hub-bgp/providers/Microsoft.Compute/virtualMachines/frrVM",
+            "ports": [
+              {
+                "allowedSourceAddressPrefix": "*",
+                "maxRequestAccessDuration": "P1D",
+                "number": 22,
+                "protocol": "*"
+              }
+            ]
+          }
+        ]
+      },
+      "type": "Microsoft.Security/locations/jitNetworkAccessPolicies"
+    }
+  ]
+}
