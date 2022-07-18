@@ -53,7 +53,7 @@ else
         done
     else
         if [ "$2" == "-a" ]; then
-            loc=$(az group show -g $1 --query 'location' -o tsv)
+	    loc=$(az vm show -g $1 -n $3 --query 'location' -o tsv)
             myvar=$4
             ports=(`echo $myvar | tr ',' ' '`)
             uri='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Security/locations/'$loc'/jitNetworkAccessPolicies/'$3'?api-version=2020-01-01'
@@ -93,7 +93,7 @@ else
 	    else
 	        dur=$3
 	    fi
-            loc=$(az group show -g $1 --query 'location' -o tsv)
+	    loc=$(az vm show -g $1 -n $2 --query 'location' -o tsv)
             ip=$(curl -s -4 ifconfig.io)
 	        uri='https://management.azure.com/subscriptions/'$subid'/resourceGroups/'$1'/providers/Microsoft.Security/locations/'$loc'/jitNetworkAccessPolicies/'$2'?api-version=2020-01-01'
             myvar=$(az rest --method GET --url $uri | jq ".properties.virtualMachines[].ports[].number")
