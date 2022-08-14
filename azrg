@@ -6,11 +6,15 @@ else
         az group list --query "[].{name:name, loc:location, state:properties.provisioningState} | sort_by([], &name)" -o table
     else
         if [[ -z "$2" ]]; then
-	    az resource list -g $1 --query "[].{ name: name, flavor: kind, Resourcetype: type, region: location, state: provisioningState } | sort_by([], &Resourcetype)" -o table
-	else
-	    if [ "$1" == "-d" ]; then
-	        az group delete -n $2 --no-wait
-            fi 
-	fi
+          az resource list -g $1 --query "[].{ name: name, Resourcetype: type, region: location } | sort_by([], &Resourcetype)" | awk '{ gsub(/Microsoft.Network\//,""); print }' | awk '{ gsub(/Microsoft.Compute\/virtualMachines\//,""); print }' | awk '{ gsub(/Microsoft.Compute\//,""); print }' | jq -r '["Name","Type","Region"], (.[] | [.name, .Resourcetype, .region]) | @csv' | csvlook -I
+        else
+            if [ "$2" == "-f" ]; then
+	              az resource list -g $1 --query "[].{ name: name, flavor: kind, Resourcetype: type, region: location, state: provisioningState } | sort_by([], &Resourcetype)" -o table
+            else
+	              if [ "$1" == "-d" ]; then
+	                  az group delete -n $2 --no-wait
+                fi 
+	          fi
+        fi
     fi
 fi
